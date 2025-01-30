@@ -1,0 +1,30 @@
+{
+  "name": "talim-platformasi",
+  "version": "1.0.0",
+  "description": "This Project is so important for me ",
+  "main": "Backend/server.js",
+  "scripts": {
+    "start": "node Backend/server.js ",
+    "dev": "nodemon Backend/server.js "
+  },
+  "type": "module",
+  "keywords": [
+    "MERN"
+  ],
+  "author": "Jahongir Rustamov",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "gitignore": "^0.7.0",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "mongoose": "^8.8.2",
+    "stripe": "^17.3.1"
+  }
+}
