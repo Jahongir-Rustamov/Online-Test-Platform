@@ -17,7 +17,7 @@ const Contact = () => {
       <div className="bg-gradient-to-r from-blue-500/80 to-indigo-500/80 shadow-sm">
         <div className="max-w-7xl mx-auto py-8 sm:py-10 px-4">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-white italic tracking-wide">
-            Biz bilan bog'lanish
+            Biz bilan bog&lsquo;lanish
             <div className="h-0.5 w-16 sm:w-24 bg-white/80 mx-auto mt-3 sm:mt-4 rounded-full"></div>
           </h1>
         </div>
