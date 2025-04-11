@@ -4,8 +4,9 @@
   "description": "This Project is so important for me ",
   "main": "Backend/server.js",
   "scripts": {
-    "start": "node Backend/server.js ",
-    "dev": "nodemon Backend/server.js "
+   "start": "node Backend/server.js",
+    "dev": "nodemon Backend/server.js",
+    "build": "npm install && npm install --prefix Frontend && npm run build --prefix Frontend"
   },
   "type": "module",
   "keywords": [
