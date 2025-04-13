@@ -24,9 +24,9 @@ app.use("/api/student", StudentsSections);
 app.use("/api/get/Statistics", GetStatistics);
 app.use("/api/profile", ProfileSection);
 if (process.env.Node_Env === "production") {
-  app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+  app.use(express.static(path.join(__dirname, "/Frontend/dist")));
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../Frontend", "dist", "index.html"));
+    res.sendFile(path.resolve(__dirname, "Frontend", "dist", "index.html"));
   });
 }
 const port = process.env.port || 3000;
