@@ -27,7 +27,6 @@ const MyTestsOnWorked = () => {
     return Math.round(totalPercentage / WorkedOn.TestWorkedOn.length);
   };
 
-  const chartData =
     WorkedOn?.TestWorkedOn?.map((test, index) => ({
       name: `Test ${index + 1}`,
       percentage: test.correctPercentage,
