@@ -53,9 +53,15 @@ app.use("/api/profile", ProfileSection);
 
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/Frontend/dist")));
+  const frontendPath = path.join(__dirname, "../Frontend/dist");
+  console.log("Frontend path:", frontendPath);
+
+  app.use(express.static(frontendPath));
+
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "Frontend", "dist", "index.html"));
+    const indexPath = path.join(frontendPath, "index.html");
+    console.log("Index path:", indexPath);
+    res.sendFile(indexPath);
   });
 }
 

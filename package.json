@@ -1,12 +1,13 @@
 {
-  "name": "talim-platformasi",
+  "name": "online-test-platform",
   "version": "1.0.0",
-  "description": "This Project is so important for me ",
+  "description": "Online Test Platform",
   "main": "Backend/server.js",
   "scripts": {
     "start": "node Backend/server.js",
-    "dev": "nodemon Backend/server.js",
-    "build": "npm install && npm install --prefix Frontend && npm run build --prefix Frontend"
+    "build": "npm install && cd Frontend && npm install && npm run build",
+    "install-all": "npm install",
+    "dev": "nodemon Backend/server.js"
   },
   "type": "module",
   "keywords": [
