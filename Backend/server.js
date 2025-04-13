@@ -51,20 +51,6 @@ app.use("/api/student", StudentsSections);
 app.use("/api/get/Statistics", GetStatistics);
 app.use("/api/profile", ProfileSection);
 
-// Serve static files in production
-if (process.env.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "../Frontend/dist");
-  console.log("Frontend path:", frontendPath);
-
-  app.use(express.static(frontendPath));
-
-  app.get("*", (req, res) => {
-    const indexPath = path.join(frontendPath, "index.html");
-    console.log("Index path:", indexPath);
-    res.sendFile(indexPath);
-  });
-}
-
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
