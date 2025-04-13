@@ -13,8 +13,6 @@ import ProfileSection from "./routes/ProfileSection.route.js";
 import GetStatistics from "./routes/GetStatistics.js";
 import { connectDB } from "./Databases/db.js";
 import path from "path";
-import { HeavyComponent } from "./components/HeavyComponent";
-import { lazy } from "react";
 
 const app = express();
 config();
@@ -72,7 +70,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   connectDB();
   console.log(`Server running on port: ${port}`);
