@@ -14,5 +14,14 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 1000, // 1000kb = 1MB
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+          "ui-vendor": ["@mui/material", "@emotion/react", "@emotion/styled"],
+          "utils-vendor": ["axios", "zustand", "framer-motion"],
+        },
+      },
+    },
   },
 });
