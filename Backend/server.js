@@ -25,10 +25,6 @@ app.use(
 config();
 app.use(express.json());
 app.use(cookieParser());
-
-const __dirname = path.resolve();
-
-// API routes
 app.use("/api/auth", AuthSections);
 app.use("/api/admin", AdminSections);
 app.use("/api/teacher", TeacherSections);
@@ -37,14 +33,6 @@ app.use("/api/student", StudentsSections);
 app.use("/api/get/Statistics", GetStatistics);
 app.use("/api/profile", ProfileSection);
 
-// Production mode
-if (process.env.Node_Env === "production") {
-  app.use(express.static(path.join(__dirname, "/Frontend/dist")));
-  
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "Frontend", "dist", "index.html"));
-  });
-}
 
 const port = process.env.port || 3000;
 app.listen(port, () => {
