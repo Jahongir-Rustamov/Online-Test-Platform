@@ -1,6 +1,5 @@
 import express from "express";
 import { config } from "dotenv";
-import cors from "cors";
 import cookieParser from "cookie-parser";
 import AuthSections from "./routes/AuthSections.route.js";
 import AdminSections from "./routes/AdminSections.route.js";
@@ -10,19 +9,16 @@ import StudentsSections from "./routes/StudentsSections.route.js";
 import ProfileSection from "./routes/ProfileSection.route.js";
 import GetStatistics from "./routes/GetStatistics.js";
 import { connectDB } from "./Databases/db.js";
-import path from "path";
+import cors from "cors";
 const app = express();
-
-// CORS sozlamasi
+config();
 app.use(
   cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
+    origin: "http://localhost:5174", // frontend manzili
+    credentials: true, // agar cookie/token yuborsangiz kerak bo‘ladi
   })
 );
 
-config();
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", AuthSections);
@@ -33,9 +29,8 @@ app.use("/api/student", StudentsSections);
 app.use("/api/get/Statistics", GetStatistics);
 app.use("/api/profile", ProfileSection);
 
-
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   connectDB();
-  console.log(`Server running on port :${port}`);
+  console.log(`Server running on port: ${port}`);
 });
