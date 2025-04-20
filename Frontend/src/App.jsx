@@ -63,7 +63,7 @@ const App = () => {
             path="/my-tests"
             element={user ? <MyTestsOnWorked /> : <Navigate to={"/login"} />}
           />
-          <Route path={`/subject/:id`} element={<EachTests name={name} />} />
+          <Route path={`/subject/:id`} element={<EachTests name=  {name} />} />
           <Route
             path={"/get/questions/:id"}
             element={user ? <QuestionsPages /> : <Navigate to={"/login"} />}

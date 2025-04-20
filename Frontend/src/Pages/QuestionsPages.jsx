@@ -12,7 +12,7 @@ const QuestionsPages = () => {
 
   const [isChecked, setIsChecked] = useState(false);
   const [randomizedQuestions, setRandomizedQuestions] = useState([]);
-  const [Yuborish, SetYuborish] = useState([]); 
+  const [Yuborish, SetYuborish] = useState([]);
 
   const handleOptionChange = (testID, optionID) => {
     // Yangi tanlovni yangilash yoki qo'shish
@@ -41,7 +41,7 @@ const QuestionsPages = () => {
       }
     });
     console.log("Yuboriladigan javoblar:", completedAnswers);
-    checkAnswers(completedAnswers, id);   
+    checkAnswers(completedAnswers, id);
   };
 
   useEffect(() => {

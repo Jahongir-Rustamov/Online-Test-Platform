@@ -139,10 +139,10 @@ const EachTests = ({ name }) => {
                   <RiInboxArchiveLine className="w-8 h-8 md:w-12 md:h-12 text-purple-500" />
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
-                  Hozircha testlar yo'q
+                  Hozircha testlar yo&apos;q
                 </h3>
                 <p className="text-sm md:text-base text-gray-500">
-                  Bu fanda hali testlar qo'shilmagan
+                  Bu fanda hali testlar qo&apos;shilmagan
                 </p>
               </div>,
               {

@@ -16,6 +16,8 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://127.0.0.1:5174",
+  /^http:\/\/192\.168\.\d+\.\d+:\d+$/, // 192.168.x.x manzillar uchun
+  /^http:\/\/10\.\d+\.\d+\.\d+:\d+$/,
 ];
 
 app.use(

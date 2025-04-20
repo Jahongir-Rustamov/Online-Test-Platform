@@ -2,7 +2,6 @@ import generateToken from "../GenerateToken/generateToken.js";
 import UserModel from "../models/auth.model.js";
 import subjectModel from "../models/subject.model.js";
 import bcryptjs from "bcryptjs";
-
 export async function Signup(req, res) {
   try {
     const { email, password, name } = req.body;
@@ -36,8 +35,7 @@ export async function Signup(req, res) {
     const user = await newUser.save();
 
     // Generate Token here
-    generateToken(user._id, res);
-
+    const token = generateToken(user._id, res);
     // Check for subject association
     const HaveId = await subjectModel.findOne({ _id: user._id });
     const ID = HaveId ? true : false;
@@ -48,6 +46,7 @@ export async function Signup(req, res) {
       email: user.email,
       role: user.role,
       ID,
+      token,
     });
   } catch (error) {
     console.log("Error in Signup:", error.message);
@@ -76,7 +75,7 @@ export async function Login(req, res) {
     }
 
     // Generate Token here
-    generateToken(verify._id, res);
+    const token = generateToken(verify._id, res);
 
     // Check for subject association
     const HaveId = await subjectModel.findOne({ _id: verify._id });
@@ -88,6 +87,7 @@ export async function Login(req, res) {
       email: verify.email,
       role: verify.role,
       ID,
+      token,
     });
   } catch (error) {
     console.log("Error in Login:", error.message);

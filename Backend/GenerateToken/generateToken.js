@@ -12,6 +12,7 @@ const generateToken = (UserId, res) => {
     sameSite: "strict",
     secure: process.env.Node_Env !== "development",
   });
+  return accessToken;
 };
 
 export default generateToken;

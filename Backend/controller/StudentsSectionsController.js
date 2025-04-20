@@ -5,8 +5,8 @@ export async function CheckAnswers(req, res) {
   try {
     const user = req.user;
     const { testID } = req.params;
-    const { student_questionsMassive } = req.body;
-    const ThisTest = await TestModel.findById(testID);
+    const { student_questionsMassive,testId_M } = req.body;
+    const ThisTest = await TestModel.findById(testID || testId_M);
 
     if (!ThisTest) {
       return res.status(404).json({ message: "Test topilmadi" });
