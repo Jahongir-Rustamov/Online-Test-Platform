@@ -14,6 +14,7 @@ import LoadingSpinner from "./companents/LoadingSpinner";
 import EachTests from "./Pages/EachTests";
 import QuestionsPages from "./Pages/QuestionsPages";
 import CheckAnswer from "./Pages/CheckAnswer";
+import ParentsProfile from "./Pages/ParentsProfile";
 
 const App = () => {
   const { user, checkingAuth, checkAuth } = useUserStore();
@@ -63,7 +64,7 @@ const App = () => {
             path="/my-tests"
             element={user ? <MyTestsOnWorked /> : <Navigate to={"/login"} />}
           />
-          <Route path={`/subject/:id`} element={<EachTests name=  {name} />} />
+          <Route path={`/subject/:id`} element={<EachTests name={name} />} />
           <Route
             path={"/get/questions/:id"}
             element={user ? <QuestionsPages /> : <Navigate to={"/login"} />}
@@ -72,6 +73,7 @@ const App = () => {
             path="/checked_answers/:encodedTestID"
             element={<CheckAnswer />}
           />
+          <Route path="/parents-profile" element={<ParentsProfile />} />
         </Routes>
       </div>
       <Toaster />

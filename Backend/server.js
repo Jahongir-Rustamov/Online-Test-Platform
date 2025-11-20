@@ -8,6 +8,7 @@ import GetAllOfTests from "./routes/GetAllTests.route.js";
 import StudentsSections from "./routes/StudentsSections.route.js";
 import ProfileSection from "./routes/ProfileSection.route.js";
 import GetStatistics from "./routes/GetStatistics.js";
+import GetStudents from "./routes/GetAllStudents.js";
 import { connectDB } from "./Databases/db.js";
 import cors from "cors";
 const app = express();
@@ -42,6 +43,7 @@ app.use("/api/get_tests", GetAllOfTests);
 app.use("/api/student", StudentsSections);
 app.use("/api/get/Statistics", GetStatistics);
 app.use("/api/profile", ProfileSection);
+app.use("/api", GetStudents);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

@@ -2,6 +2,7 @@ import express from "express";
 import { ProtectRoute } from "../middlewares/ProtectRoute.js";
 import {
   ChangePassword,
+  CreateParents,
   createRole,
   createSubject,
   DeleteTeacher,
@@ -28,5 +29,9 @@ router.get(
   ProtectAdmin,
   GetChangedTeachers
 );
+
+//new section
+
+router.post("/create_parent", ProtectRoute, ProtectAdmin, CreateParents);
 
 export default router;

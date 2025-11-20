@@ -5,6 +5,7 @@ import {
   FaHeadset,
   FaSignOutAlt,
   FaTelegramPlane,
+  FaUser,
 } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -121,6 +122,20 @@ const Navbar = () => {
                     <FaClipboardList className="w-4 h-4" />
                   </span>
                   <span className="ml-2">Test Yaratish</span>
+                </Link>
+              </li>
+            )}
+            {user?.role === "admin" &&  (
+              <li>
+                <Link
+                  to="/parents-profile"
+                  className="flex items-center text-blue-900 hover:text-blue-600 transition-colors duration-300 group"
+                  onClick={closeMenu}
+                >
+                  <span className="bg-blue-100 p-2 rounded-lg group-hover:bg-blue-200 transition-colors duration-300">
+                    <FaUser className="w-4 h-4" />
+                  </span>
+                  <span className="ml-2">Farzandim natijalari</span>
                 </Link>
               </li>
             )}

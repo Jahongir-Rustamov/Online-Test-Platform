@@ -185,3 +185,83 @@ export async function GetChangedTeachers(req, res) {
     res.status(500).json({ message: "Serverda xatolik yuz berdi ❌" });
   }
 }
+
+// todo new sections
+
+//GetAllStudents controller
+export async function GetAllStudents(req, res) {
+  try {
+    const students = await UserModel.find({ role: "student" }).select(
+      "-password"
+    );
+    if (!students) {
+      return res
+        .status(404)
+        .json({ message: "Hozircha hech qanday student yo'q 🙅‍♂️" });
+    }
+    const infoStudents = students.map((student) => ({
+      _id: student._id,
+      name: student.name,
+      email: student.email,
+      averageScore:
+        student.TestWorkedOn.length > 0
+          ? student.TestWorkedOn.reduce(
+              (acc, test) => acc + test.correctPercentage,
+              0
+            ) / student.TestWorkedOn.length
+          : 0,
+      countOfTests: student.TestWorkedOn.length,
+    }));
+    console.log(infoStudents);
+    res.status(200).json(infoStudents);
+  } catch (error) {
+    console.log("Error in GetAllParents Controller:", error.message);
+    res.status(500).json({ message: "Serverda xatolik yuz berdi ❌" });
+  }
+}
+
+//delete Student by id
+
+export async function DeleteStudent(req, res) {
+  try {
+    const { id } = req.params;
+    await UserModel.findOneAndDelete({ _id: id, role: "student" });
+    res.status(200).json({ message: "Successfully deleted ✂️" });
+  } catch (error) {
+    console.log("Error in DeleteStudent controller:", error.message);
+    res.status(500).json({ message: "Serverda xatolik yuz berdi ❌" });
+  }
+}
+// create parents controller
+export async function CreateParents(req, res) {
+  try {
+    const { p_ID, p_role, s_ID } = req.body;
+    console.log("Req body", req.body);
+
+    if (!s_ID || !p_ID || !p_role) {
+      return res
+        .status(400)
+        .json({ message: "Ma'lumotlarni to'liq kiriting ⚠️" });
+    }
+
+    // 1️⃣ Parent foydalanuvchini topamiz
+    const parent = await UserModel.findById(p_ID).select("-password");
+    if (!parent) {
+      return res.status(400).json({ message: "Bunday parent mavjud emas 🙅‍♂️" });
+    }
+
+    // 2️⃣ Parent ro'lini o'zgartiramiz (agar hozircha student bo'lsa)
+    if (parent.role === "student") {
+      parent.role = p_role; // masalan 'parent'
+      parent.studentId = s_ID;
+      await parent.save();
+    }
+
+    res.status(200).json({
+      message: "Parent muvaffaqiyatli biriktirildi ✅",
+    });
+  } catch (error) {
+    console.log("Error in CreateParents Controller:", error.message);
+    res.status(500).json({ message: "Serverda xatolik yuz berdi ❌" });
+  }
+}

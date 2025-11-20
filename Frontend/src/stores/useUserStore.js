@@ -6,6 +6,7 @@ export const useUserStore = create((set) => ({
   user: null,
   loading: false,
   checkingAuth: true,
+  studentss: [],
 
   signup: async ({ name, email, password, confirmPassword }, navigate) => {
     set({ loading: true });
@@ -71,6 +72,59 @@ export const useUserStore = create((set) => ({
       const errorMessage =
         error.response?.data?.message || "Xatolik yuz berdi ⚠️";
       toast.error(errorMessage, { id: "auth-error" });
+    }
+  },
+
+  getAllStudents: async () => {
+    set({ loading: true });
+    try {
+      const res = await axios.get("/get_all_students");
+      if (res?.data) {
+        set({ studentss: res.data, loading: false });
+      } else {
+        set({ loading: false });
+      }
+      console.log(res.data);
+    } catch (error) {
+     set({ loading: false });
+      const errorMessage =
+        error.response?.data?.message || "Xatolik yuz berdi ⚠️";
+      toast.error(errorMessage, { id: "get-students-error" });
+    }
+  },
+
+  deleteStudent: async (id) => {
+    set({ loading: true });
+    try {
+      await axios.delete(`/delete_student/${id}`);
+      set((state) => ({
+        studentss: state.studentss.filter((student) => student._id !== id),
+        loading: false
+      }));
+      toast.success("O'quvchini muvaffaqiyatli o'chirdingiz🎉");
+    } catch (error) {
+      set({ loading: false });
+      const errorMessage =
+        error.response?.data?.message || "Xatolik yuz berdi ⚠️";
+      toast.error(errorMessage, { id: "delete-student-error" });
+    }
+  },
+
+  createParents: async ({ p_ID, p_role, s_ID }) => {
+    set({ loading: true });
+    try {
+      await axios.post("/admin/create_parent", { p_ID, p_role, s_ID });
+      set((prevState)=>({
+        studentss:prevState.studentss.filter((student)=>student._id!==p_ID),
+        loading:false
+      }))
+      set({ loading: false });
+      toast.success("Muvaffaqiyatli ota-onani qo'shdingiz🎉");
+    } catch (error) {
+      set({ loading: false });
+      const errorMessage =
+        error.response?.data?.message || "Xatolik yuz berdi ⚠️";
+      toast.error(errorMessage, { id: "create-parent-error" });
     }
   },
 }));

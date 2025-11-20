@@ -3,11 +3,13 @@ import {
   PlusIcon,
   UserGroupIcon,
   NoSymbolIcon,
+  AcademicCapIcon,
 } from "@heroicons/react/24/outline";
 import ViewTeachers from "./ViewTeachers";
 import BlockedTeachers from "./BlockedTeachers";
 import { useTestsStore } from "../stores/useTestsStore";
 import { Loader } from "lucide-react";
+import ViewStudents from "./ViewStudents";
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("createSubject");
   const [teacherData, setTeacherData] = useState({
@@ -101,6 +103,18 @@ const AdminDashboard = () => {
             >
               <NoSymbolIcon className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
               <span className="whitespace-nowrap">Jazolanganlar</span>
+            </button>
+             <button
+              onClick={() => setActiveTab("viewStudents")}
+              className={`flex items-center justify-center flex-1 px-2 md:px-4 py-2 md:py-3 rounded-lg text-xs md:text-sm font-medium transition-all duration-200
+                ${
+                  activeTab === "viewStudents"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+            >
+              <AcademicCapIcon className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
+              <span className="whitespace-nowrap">O&apos;quvchilar</span>
             </button>
           </div>
         </div>
@@ -251,6 +265,7 @@ const AdminDashboard = () => {
         )}
         {activeTab === "viewTeachers" && <ViewTeachers />}
         {activeTab === "blockedTeachers" && <BlockedTeachers />}
+        {activeTab === "viewStudents" && <ViewStudents />}
       </div>
     </div>
   );
