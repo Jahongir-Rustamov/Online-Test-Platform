@@ -5,7 +5,7 @@ export async function CheckAnswers(req, res) {
   try {
     const user = req.user;
     const { testID } = req.params;
-    const { student_questionsMassive,testId_M } = req.body;
+    const { student_questionsMassive, testId_M } = req.body;
     const ThisTest = await TestModel.findById(testID || testId_M);
 
     if (!ThisTest) {

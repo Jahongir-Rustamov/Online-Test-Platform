@@ -19,9 +19,9 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    studentId:{
-      type:String,
-      trim:true
+    studentId: {
+      type: String,
+      trim: true
     },
     role: {
       type: String,
@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
-      },
+      }, { timestamps: true }
     ],
   },
   { timestamps: true }

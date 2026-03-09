@@ -1,28 +1,27 @@
 import { useState, useEffect } from 'react';
-import { 
-  TrashIcon, 
+import {
+  TrashIcon,
   PencilSquareIcon,
   AcademicCapIcon,
-  ArrowPathIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
+  UserIcon,
 } from '@heroicons/react/24/outline';
 import { useUserStore } from '../stores/useUserStore';
 import EditModal from './EditModal';
 
 const ViewStudents = () => {
-  
-  const { getAllStudents,loading,studentss,deleteStudent} = useUserStore();
+  const { getAllStudents, loading, studentss, deleteStudent } = useUserStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const studentsPerPage = 5;
-  const students = studentss;
+  const studentsPerPage = 8;
+  const students = studentss || [];
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   useEffect(() => {
     getAllStudents();
   }, [getAllStudents]);
-  
+
   const handleDelete = async (id) => {
     if (window.confirm('Haqiqatan ham bu o\'quvchini o\'chirmoqchimisiz?')) {
       await deleteStudent(id);
@@ -33,8 +32,9 @@ const ViewStudents = () => {
     setSelectedStudent(student);
     setIsEditModalOpen(true);
   };
+
   // Filter students based on search term
-  const filteredStudents = students.filter(student => 
+  const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -61,23 +61,36 @@ const ViewStudents = () => {
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  
+
   // Generate page numbers to display
   const pageNumbers = [];
   const maxPageButtons = 5;
   let startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
   let endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
-  
+
   if (endPage - startPage + 1 < maxPageButtons) {
     startPage = Math.max(1, endPage - maxPageButtons + 1);
   }
-  
+
   for (let i = startPage; i <= endPage; i++) {
     pageNumbers.push(i);
   }
 
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-[50vh] w-full mt-8">
+        <div className="relative flex items-center justify-center p-8 bg-[#1e293b]/40 backdrop-blur-xl border border-white/10 rounded-3xl shadow-[0_0_40px_rgba(16,185,129,0.1)]">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 to-transparent opacity-50 rounded-3xl pointer-events-none" />
+          <div className="h-12 w-12 border-4 border-white/10 border-t-primary-500 rounded-full animate-spin relative z-10" />
+          <span className="ml-4 text-slate-300 font-medium tracking-wide relative z-10 animate-pulse">
+            Yuklanmoqda...
+          </span>
+        </div>
+      </div>
+    );
+
   return (
-    <div className="p-4 md:p-6">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 pb-10">
       {/* Edit Student Modal */}
       {isEditModalOpen && selectedStudent && (
         <EditModal
@@ -89,133 +102,127 @@ const ViewStudents = () => {
           }}
           onSave={async (data) => {
             console.log('Saving:', data);
-            // await updateStudent(data);
             setIsEditModalOpen(false);
             setSelectedStudent(null);
           }}
         />
       )}
-      <div className="mb-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex items-center">
-            <AcademicCapIcon className="w-8 h-8 text-blue-600 mr-3" />
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 whitespace-nowrap">
+
+      {/* Header & Search Area */}
+      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-primary-500/10 border border-primary-500/20 rounded-2xl shadow-inner">
+            <AcademicCapIcon className="w-8 h-8 text-primary-400" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight font-outfit">
               O'quvchilar Ro'yxati
             </h1>
+            <p className="text-slate-400 text-sm mt-0.5">
+              Jami {filteredStudents.length} ta o'quvchi topildi
+            </p>
           </div>
-          
-          <div className="relative w-full sm:w-72 md:w-80">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <MagnifyingGlassIcon className="h-4 w-4 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Qidirish..."
-              className="block w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition duration-150"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        </div>
+
+        <div className="relative group w-full md:w-80">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <MagnifyingGlassIcon className="h-5 w-5 text-slate-500 group-focus-within:text-primary-400 transition-colors" />
           </div>
+          <input
+            type="text"
+            placeholder="O'quvchini qidirish..."
+            className="block w-full pl-11 pr-4 py-3.5 border border-white/10 rounded-2xl bg-[#1e293b]/40 backdrop-blur-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-300 shadow-lg"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th scope="col" className="w-16 px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  #
-                </th>
-                <th scope="col" className="w-1/4 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ism Familiya
-                </th>
-                <th scope="col" className="w-1/3 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
-                </th>
-                <th scope="col" className="w-32 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Testlar soni
-                </th>
-                <th scope="col" className="w-32 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  O'rtacha Ball
-                </th>
-                <th scope="col" className="w-32 px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amallar
-                </th>
+      {/* Desktop Table View */}
+      <div className="hidden md:block bg-[#1e293b]/60 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+        <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-420px)] custom-scrollbar">
+          <table className="min-w-full divide-y divide-white/5">
+            <thead>
+              <tr className="bg-slate-900/40">
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">#</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">O'quvchi</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Email</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Testlar</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Progress</th>
+                <th className="px-6 py-4 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">Amallar</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {loading ? (
+            <tbody className="divide-y divide-white/5">
+              {filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
-                    <div className="flex flex-col items-center justify-center">
-                      <ArrowPathIcon className="animate-spin h-8 w-8 text-blue-500 mb-2" />
-                      <p>Ma'lumotlar yuklanmoqda...</p>
+                  <td colSpan="6" className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <div className="p-4 bg-slate-800/40 rounded-full border border-white/5">
+                        <UserIcon className="w-8 h-8 text-slate-500" />
+                      </div>
+                      <p className="text-slate-400 font-medium">Hech qanday o'quvchi topilmadi</p>
                     </div>
-                  </td>
-                </tr>
-              ) : filteredStudents.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
-                    Hech qanday o&apos;quvchi topilmadi
                   </td>
                 </tr>
               ) : (
                 currentStudents.map((student, index) => (
-                  <tr key={student._id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                  <tr key={student._id} className="hover:bg-white/5 transition-all duration-200 group">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium">
                       {index + 1 + (currentPage - 1) * studentsPerPage}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                          <span className="text-blue-600 font-medium">
-                            {student.name.split(' ').map(n => n[0].toUpperCase()).join('')}
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500/20 to-primary-600/10 border border-primary-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <span className="text-primary-400 font-bold text-sm tracking-tighter">
+                            {student.name.split(' ').map(n => n[0].toUpperCase()).join('').substring(0, 2)}
                           </span>
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{student.name.charAt(0).toUpperCase() + student.name.slice(1).toLowerCase()}</div>
+                        <div className="text-sm font-bold text-white group-hover:text-primary-400 transition-colors">
+                          {student.name.charAt(0).toUpperCase() + student.name.slice(1).toLowerCase()}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-light">
                       {student.email}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {student.countOfTests} ta
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                      <span className="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full font-medium">
+                        {student.countOfTests || 0} ta
+                      </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
-                          <div 
-                            className={`h-2.5 rounded-full ${
-                              student.averageScore >= 80 ? 'bg-green-500' : 
-                              student.averageScore >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-                            }`}
-                            style={{ width: `${student.averageScore}%` }}
+                    <td className="px-6 py-4 whitespace-nowrap min-w-[200px]">
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 bg-slate-800/60 rounded-full h-2 overflow-hidden border border-white/5">
+                          <div
+                            className={`h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(var(--tw-gradient-from),0.5)] ${student.averageScore >= 80 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' :
+                              student.averageScore >= 50 ? 'bg-gradient-to-r from-amber-500 to-orange-400' :
+                                'bg-gradient-to-r from-red-500 to-rose-400'
+                              }`}
+                            style={{ width: `${student.averageScore || 0}%` }}
                           ></div>
                         </div>
-                        <span className="text-sm font-medium text-gray-700">
-                          {student.averageScore}%
+                        <span className={`text-xs font-bold min-w-[35px] text-right ${student.averageScore >= 80 ? 'text-emerald-400' :
+                          student.averageScore >= 50 ? 'text-amber-400' : 'text-rose-400'
+                          }`}>
+                          {student.averageScore || 0}%
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end space-x-2">
-                        <button
-                          onClick={() => handleDelete(student._id)}
-                          className="text-red-600 hover:text-red-900 p-1.5 rounded-full hover:bg-red-50"
-                          title="O'chirish"
-                        >
-                          <TrashIcon className="h-5 w-5" />
-                        </button>
-                        {/* TODO: Implement edit student functionality */}
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => handleEditClick(student)}
-                          className="text-blue-600 hover:text-blue-900 p-1.5 rounded-full hover:bg-blue-50"
+                          className="p-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl hover:bg-blue-500 hover:text-white transition-all duration-300"
                           title="Tahrirlash"
                         >
                           <PencilSquareIcon className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(student._id)}
+                          className="p-2 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl hover:bg-rose-500 hover:text-white transition-all duration-300"
+                          title="O'chirish"
+                        >
+                          <TrashIcon className="h-5 w-5" />
                         </button>
                       </div>
                     </td>
@@ -227,65 +234,123 @@ const ViewStudents = () => {
         </div>
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-200">
-          <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
-            <div className="text-sm text-gray-700">
-              {filteredStudents.length} ta o'quvchidan {indexOfFirstStudent + 1}-{Math.min(indexOfLastStudent, filteredStudents.length)} ko'rsatilmoqda
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4 px-2 overflow-y-auto max-h-[calc(100vh-380px)] custom-scrollbar pb-4">
+        {filteredStudents.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 bg-[#1e293b]/40 backdrop-blur-xl border border-white/5 rounded-3xl">
+            <div className="p-4 bg-slate-800/40 rounded-full border border-white/5 mb-3">
+              <UserIcon className="w-8 h-8 text-slate-500" />
             </div>
-            <div className="flex items-center space-x-1">
-              <button
-                onClick={() => paginate(1)}
-                disabled={currentPage === 1}
-                className="px-3 py-1 rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                &laquo;
-              </button>
-              <button
-                onClick={() => paginate(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1 rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                &lsaquo;
-              </button>
-              
-              {startPage > 1 && (
-                <span className="px-2 text-gray-500">...</span>
-              )}
-              
-              {pageNumbers.map((number) => (
+            <p className="text-slate-400 font-medium font-outfit">Hech qanday o'quvchi topilmadi</p>
+          </div>
+        ) : (
+          currentStudents.map((student) => (
+            <div
+              key={student._id}
+              className="backdrop-blur-xl bg-[#1e293b]/60 border border-white/10 rounded-3xl p-5 shadow-xl relative overflow-hidden group active:scale-[0.98] transition-all duration-200"
+            >
+              <div className="absolute top-0 right-0 w-24 h-24 bg-primary-500/5 blur-2xl rounded-full -mr-10 -mt-10 group-hover:bg-primary-500/10 transition-colors" />
+
+              <div className="flex justify-between items-start mb-5 relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary-500/20 to-primary-600/10 border border-primary-500/20 flex items-center justify-center">
+                    <span className="text-primary-400 font-bold text-base tracking-tighter">
+                      {student.name.split(' ').map(n => n[0].toUpperCase()).join('').substring(0, 2)}
+                    </span>
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                    <h3 className="text-base font-bold text-white font-outfit leading-tight group-hover:text-primary-400 transition-colors truncate pr-2">
+                      {student.name.charAt(0).toUpperCase() + student.name.slice(1).toLowerCase()}
+                    </h3>
+                    <p className="text-[11px] text-slate-400 font-light mt-0.5 break-all line-clamp-1 opacity-80">{student.email}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => handleEditClick(student)}
+                    className="p-2.5 bg-blue-500/10 text-blue-400 border border-blue-500/10 rounded-xl active:bg-blue-500 active:text-white transition-all shadow-sm"
+                  >
+                    <PencilSquareIcon className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(student._id)}
+                    className="p-2.5 bg-rose-500/10 text-rose-400 border border-rose-500/10 rounded-xl active:bg-rose-500 active:text-white transition-all shadow-sm"
+                  >
+                    <TrashIcon className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 relative z-10">
+                <div className="bg-slate-900/40 p-3 rounded-2xl border border-white/5">
+                  <span className="block text-[10px] text-slate-500 uppercase font-bold mb-1 tracking-wider">Testlar</span>
+                  <span className="inline-flex px-2 py-0.5 rounded-lg text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/20">
+                    {student.countOfTests || 0} ta
+                  </span>
+                </div>
+                <div className="bg-slate-900/40 p-3 rounded-2xl border border-white/5">
+                  <span className="block text-[10px] text-slate-500 uppercase font-bold mb-1 tracking-wider">O'rtacha Ball</span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-bold leading-none ${student.averageScore >= 80 ? 'text-emerald-400' :
+                      student.averageScore >= 50 ? 'text-amber-400' : 'text-rose-400'
+                      }`}>
+                      {student.averageScore || 0}%
+                    </span>
+                    <div className="flex-1 bg-slate-800 rounded-full h-1.5 overflow-hidden border border-white/5">
+                      <div
+                        className={`h-full rounded-full ${student.averageScore >= 80 ? 'bg-emerald-500' :
+                          student.averageScore >= 50 ? 'bg-amber-500' : 'bg-rose-500'
+                          }`}
+                        style={{ width: `${student.averageScore || 0}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Improved Pagination Area */}
+      {totalPages > 1 && (
+        <div className="mt-8 relative z-10 px-2">
+          <div className="bg-[#1e293b]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-4 md:p-6 shadow-2xl">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-xs md:text-sm text-slate-400 font-medium">
+                Showing <span className="text-white">{indexOfFirstStudent + 1}</span> to <span className="text-white">{Math.min(indexOfLastStudent, filteredStudents.length)}</span> of <span className="text-white">{filteredStudents.length}</span> students
+              </div>
+              <div className="flex items-center gap-1 md:gap-1.5">
                 <button
-                  key={number}
-                  onClick={() => paginate(number)}
-                  className={`px-3 py-1 rounded-md ${
-                    currentPage === number
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  onClick={() => paginate(1)}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-xl text-slate-500 hover:bg-white/5 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
                 >
-                  {number}
+                  &laquo;
                 </button>
-              ))}
-              
-              {endPage < totalPages && (
-                <span className="px-2 text-gray-500">...</span>
-              )}
-              
-              <button
-                onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                &rsaquo;
-              </button>
-              <button
-                onClick={() => paginate(totalPages)}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 rounded-md text-gray-500 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                &raquo;
-              </button>
+
+                {pageNumbers.map((number) => (
+                  <button
+                    key={number}
+                    onClick={() => paginate(number)}
+                    className={`min-w-[32px] md:min-w-[40px] h-8 md:h-10 rounded-xl font-bold text-xs md:text-sm transition-all duration-300 ${currentPage === number
+                      ? 'bg-primary-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)] border border-primary-500/30'
+                      : 'text-slate-400 hover:bg-white/5 border border-transparent hover:text-white'
+                      }`}
+                  >
+                    {number}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => paginate(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-xl text-slate-500 hover:bg-white/5 disabled:opacity-30 disabled:hover:bg-transparent transition-all"
+                >
+                  &raquo;
+                </button>
+              </div>
             </div>
           </div>
         </div>

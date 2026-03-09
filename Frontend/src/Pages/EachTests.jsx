@@ -1,6 +1,7 @@
-import { motion } from "framer-motion";
-import { FaTrash, FaChevronRight, FaClock } from "react-icons/fa";
-import { RiMailOpenFill, RiInboxArchiveLine } from "react-icons/ri";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaTrash, FaChevronRight, FaClock, FaSearch, FaTimes, FaPlus, FaPlay } from "react-icons/fa";
+import { RiMailOpenFill, RiInboxArchiveLine, RiMistLine, RiRocket2Fill } from "react-icons/ri";
+import { HiSparkles } from "react-icons/hi";
 import { useUserStore } from "../stores/useUserStore";
 import { useState, useEffect } from "react";
 import { useTestsStore } from "../stores/useTestsStore";
@@ -28,36 +29,13 @@ const EachTests = ({ name }) => {
   const [selectedTest, setSelectedTest] = useState(null);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
   const [animate, setAnimate] = useState(false);
-  const testsPerPage = 5;
+  const [searchQuery, setSearchQuery] = useState("");
+  const testsPerPage = 6;
 
-  // Ekran o'lchamini kuzatish
-
-  useEffect(() => {
-    getMytests(id);
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 768);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [getMytests, id]);
-
-  useEffect(() => {
-    setAnimate(true);
-    const timer = setTimeout(() => {
-      window.scrollTo(0, 0);
-      setAnimate(false);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [currentPage]);
-
-  // SubjectInfos dan testlarni olish
-  const currentSubject = mytests;
-  console.log("Mytests:", mytests);
-  const tests = currentSubject
-    ? [...currentSubject].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      )
+  const tests = mytests
+    ? [...mytests]
+      .filter(test => test.title.toLowerCase().includes(searchQuery.toLowerCase()))
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     : [];
   const subjectName = name;
 
@@ -67,9 +45,29 @@ const EachTests = ({ name }) => {
   const totalPages = Math.ceil(tests.length / testsPerPage);
 
   const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
+  for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+
+  useEffect(() => {
+    getMytests(id);
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [getMytests, id]);
+
+  useEffect(() => {
+    setAnimate(true);
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setAnimate(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
 
   const handleDelete = (test) => {
     setSelectedTest(test);
@@ -77,306 +75,293 @@ const EachTests = ({ name }) => {
   };
 
   const confirmDelete = () => {
-    console.log("Deleting test:", selectedTest._id);
     deleteTest(selectedTest._id);
     setShowDeleteModal(false);
     setSelectedTest(null);
   };
 
-  // Animatsiyali yoki oddiy komponentni qaytarish
-  const renderAnimatedOrStatic = (component, animations) => {
-    return isDesktop ? (
-      <motion.div {...animations}>{component}</motion.div>
-    ) : (
-      <div>{component}</div>
-    );
-  };
-
-  // Animatsiyali yoki oddiy tugmani qaytarish
-  const renderAnimatedOrStaticButton = (component, animations) => {
-    return isDesktop ? (
-      <motion.button {...animations}>{component}</motion.button>
-    ) : (
-      <button>{component}</button>
-    );
-  };
   const navigate = useNavigate();
+
   if (loading)
     return (
-      <div className="flex justify-center items-center h-screen">
-        <PropagateLoader color="#0e0da2" size={15} />
+      <div className="flex justify-center items-center h-screen bg-[#020617]">
+        <div className="relative">
+          <div className="w-20 h-20 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-10 h-10 bg-primary-500/10 rounded-full animate-pulse"></div>
+          </div>
+        </div>
       </div>
     );
+
   return (
-    <div
-      className={`min-h-screen bg-white text-gray-900 py-12 pt-20 px-4 sm:px-6 lg:px-8 ${
-        animate ? "fade-in" : ""
-      }`}
-    >
-      {/* Fan nomi */}
-      <div className="relative mb-8 md:mb-16">
-        {renderAnimatedOrStatic(
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-center font-['Clash Display'] tracking-tight px-4">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-pink-500 to-red-500">
-              {subjectName}
-            </span>
-          </h1>,
-          {
-            initial: { y: -100, opacity: 0 },
-            animate: { y: 0, opacity: 1 },
-            transition: { duration: 1.2, type: "spring", bounce: 0.5 },
-          }
-        )}
-        <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-16 md:w-24 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-full"></div>
+    <div className="w-full min-h-screen bg-[#020617] text-white pt-24 pb-12 sm:pt-32 relative overflow-hidden flex flex-col items-center">
+      {/* Cosmos Animated Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Deep Space Nebulae */}
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-purple-900/10 blur-[120px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 blur-[100px] rounded-full animate-pulse" style={{ animationDelay: '3s' }} />
+        <div className="absolute top-[30%] right-[10%] w-[40%] h-[40%] bg-indigo-900/10 blur-[90px] rounded-full animate-pulse" style={{ animationDelay: '5s' }} />
+
+        {/* Twinkling Stars */}
+        {[...Array(50)].map((_, i) => (
+          <motion.div
+            key={`star-${i}`}
+            initial={{ opacity: Math.random() }}
+            animate={{ opacity: [0.2, 1, 0.2] }}
+            transition={{ duration: 2 + Math.random() * 4, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"
+            style={{
+              width: Math.random() * 2 + 1 + "px",
+              height: Math.random() * 2 + 1 + "px",
+              top: Math.random() * 100 + "%",
+              left: Math.random() * 100 + "%",
+            }}
+          />
+        ))}
+
+        {/* Cosmic Dust Particles */}
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={`dust-${i}`}
+            initial={{
+              x: Math.random() * 100 + "%",
+              y: Math.random() * 100 + "%",
+              opacity: 0,
+              scale: 0.1
+            }}
+            animate={{
+              x: [null, Math.random() * 100 + "%", Math.random() * 100 + "%"],
+              y: [null, Math.random() * 100 + "%", Math.random() * 100 + "%"],
+              opacity: [0, 0.3, 0],
+              scale: [0.1, 1, 0.1]
+            }}
+            transition={{ duration: 30 + Math.random() * 40, repeat: Infinity, ease: "linear" }}
+            className="absolute"
+            style={{ left: 0, top: 0 }}
+          >
+            <HiSparkles className="text-primary-400 text-sm" />
+          </motion.div>
+        ))}
+
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.2]" />
       </div>
 
-      {/* Testlar ro'yxati */}
-      <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 px-4">
-        {tests.length === 0
-          ? renderAnimatedOrStatic(
-              <div className="text-center py-8 md:py-16">
-                <div className="w-16 h-16 md:w-24 md:h-24 mx-auto mb-4 md:mb-6 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full flex items-center justify-center">
-                  <RiInboxArchiveLine className="w-8 h-8 md:w-12 md:h-12 text-purple-500" />
-                </div>
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
-                  Hozircha testlar yo&apos;q
-                </h3>
-                <p className="text-sm md:text-base text-gray-500">
-                  Bu fanda hali testlar qo&apos;shilmagan
-                </p>
-              </div>,
-              {
-                initial: { opacity: 0, y: 20 },
-                animate: { opacity: 1, y: 0 },
-                transition: { duration: 0.5 },
-              }
-            )
-          : currentTests.map((test, index) =>
-              renderAnimatedOrStatic(
-                <div key={test._id} className="relative">
-                  <div className="group bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl md:rounded-2xl p-0.5 hover:from-purple-600 hover:to-pink-600 transition-all duration-300">
-                    <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 relative overflow-hidden">
-                      {/* Animated background */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-pink-500/5 to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      {/* Header Section: Title Left, Search Right */}
+      <div className="relative mb-12 sm:mb-20 w-full container mx-auto px-4 lg:px-12">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          {/* Left: Title & Info */}
+          <motion.div
+            initial={{ x: -30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="flex-1"
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-10 h-10 bg-primary-500/10 border border-primary-500/20 rounded-xl flex items-center justify-center">
+                <RiRocket2Fill className="text-xl text-primary-400 animate-bounce" style={{ animationDuration: '3s' }} />
+              </div>
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.4em] text-primary-400/80">Cosmos Experience</span>
+            </div>
+            <h1 className="text-4xl sm:text-7xl font-black font-outfit tracking-tighter text-white drop-shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+              {subjectName}
+            </h1>
+            <p className="mt-4 text-slate-400 text-sm sm:text-base font-medium flex items-center gap-2">
+              <RiMistLine className="text-primary-500" />
+              <span>Jami <span className="text-white font-bold">{tests.length} ta</span> koinot testlari mavjud</span>
+            </p>
+          </motion.div>
 
-                      <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
-                        <div className="flex items-center gap-3 md:gap-6">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg md:rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 p-0.5">
-                              <div className="w-full h-full rounded-lg md:rounded-xl bg-white flex items-center justify-center">
-                                <RiMailOpenFill className="text-xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-br from-purple-500 to-pink-500" />
-                              </div>
-                            </div>
-                          </div>
+          {/* Right: Search Only */}
+          <motion.div
+            initial={{ x: 30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 lg:min-w-[400px]"
+          >
+            {/* Search Input */}
+            <div className="relative flex-1 group">
+              <div className="absolute inset-0 bg-primary-500/5 blur-xl group-hover:bg-primary-500/10 transition-colors pointer-events-none" />
+              <div className="relative flex items-center backdrop-blur-3xl bg-white/[0.03] border border-white/10 hover:border-primary-500/40 rounded-2xl px-5 transition-all duration-300 focus-within:border-primary-500/50">
+                <FaSearch className="text-slate-500 group-focus-within:text-primary-400 transition-colors" />
+                <input
+                  type="text"
+                  placeholder="Test nomini qidiring..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-transparent border-none focus:ring-0 outline-none py-3.5 px-3 text-sm text-white placeholder-slate-500 font-medium"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="p-1.5 hover:bg-white/5 rounded-lg text-slate-500 hover:text-white transition-all"
+                  >
+                    <FaTimes className="text-xs" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
 
-                          <div>
-                            <h3 className="text-lg md:text-xl font-bold mb-1 md:mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-                              {test.title}
-                            </h3>
-                            <div className="flex flex-wrap items-center gap-2 md:gap-4">
-                              <span className="px-3 md:px-4 py-1 md:py-1.5 rounded-full bg-gray-100 text-gray-700 text-xs md:text-sm font-medium">
-                                {test.questionsMassive.length} ta savol
-                              </span>
-                              <span className="flex items-center gap-1 text-gray-500 text-xs md:text-sm">
-                                <FaClock className="text-gray-400" />
-                                <span>{formatDate(test.createdAt)}</span>
-                              </span>
-                            </div>
-                          </div>
-                        </div>
+      {/* Testlar ro'yxati: 2-Column Grid with Compact Rows */}
+      <div className="w-full container mx-auto px-4 lg:px-12 relative z-10 mb-20">
+        {tests.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-20 backdrop-blur-3xl bg-white/[0.02] border border-white/5 rounded-[3rem] shadow-2xl"
+          >
+            <div className="w-24 h-24 mx-auto mb-8 bg-white/5 rounded-[2rem] flex items-center justify-center border border-white/10 relative group">
+              <div className="absolute inset-0 bg-primary-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <RiInboxArchiveLine className="w-10 h-10 text-slate-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-3 font-outfit">Testlar topilmadi</h3>
+            <p className="text-slate-500 max-w-xs mx-auto leading-relaxed">Qidiringiz bo'yicha yoki ushbu fan uchun testlar mavjud emas.</p>
+          </motion.div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
+            {currentTests.map((test, index) => (
+              <motion.div
+                key={test._id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="group"
+              >
+                <div className="relative backdrop-blur-3xl bg-[#0a0f1e]/60 hover:bg-[#0f172a]/80 border border-white/10 hover:border-primary-500/40 rounded-3xl p-5 sm:p-6 transition-all duration-300 shadow-xl flex items-center gap-5 active:scale-[0.98]">
+                  {/* Miniature Icon */}
+                  <div className="relative flex-shrink-0">
+                    <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-primary-600/20 to-sky-400/20 flex items-center justify-center border border-white/5">
+                      <RiMailOpenFill className="text-lg text-primary-400" />
+                    </div>
+                  </div>
 
-                        <div className="flex items-center justify-end gap-2 md:gap-4">
-                          {user?.role === "teacher" &&
-                            user._id === test.teacher &&
-                            renderAnimatedOrStaticButton(
-                              <div
-                                onClick={() => handleDelete(test)}
-                                className="p-2 md:p-3 bg-red-500/10 text-red-500 rounded-lg md:rounded-xl hover:bg-red-500/20 transition-colors duration-200"
-                              >
-                                <FaTrash className="text-base md:text-lg" />
-                              </div>,
-                              {
-                                whileHover: { scale: 1.05 },
-                                whileTap: { scale: 0.95 },
-                              }
-                            )}
-                          {renderAnimatedOrStaticButton(
-                            <button
-                              onClick={() => {
-                                navigate(`/get/questions/${test._id}`),
-                                  getTestQuestions(test._id);
-                              }}
-                              className="flex items-center gap-1 md:gap-2 px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg md:rounded-xl font-medium text-white text-sm md:text-base hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-lg shadow-purple-500/25"
-                            >
-                              <span>Boshlash</span>
-                              <FaChevronRight className="text-xs md:text-sm" />
-                            </button>,
-                            {
-                              whileHover: { scale: 1.05 },
-                              whileTap: { scale: 0.95 },
-                            }
-                          )}
-                        </div>
+                  {/* Title and Info in middle Row */}
+                  <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <h3 className="text-sm sm:text-base font-bold text-white font-outfit truncate flex-grow group-hover:text-primary-400 transition-colors">
+                      {test.title}
+                    </h3>
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <span className="px-3 py-1 bg-primary-500/10 rounded-lg text-primary-400 text-[9px] font-black uppercase tracking-wider border border-primary-500/10 whitespace-nowrap">
+                        {test.questionsMassive.length} TA SAVOL
+                      </span>
+                      <div className="flex items-center gap-1.5 text-slate-500 text-[8px] font-bold uppercase tracking-widest">
+                        <span>{formatDate(test.createdAt).split(' ')[0]}</span>
                       </div>
                     </div>
                   </div>
-                </div>,
-                {
-                  initial: { x: index % 2 === 0 ? 100 : -100, opacity: 0 },
-                  animate: { x: 0, opacity: 1 },
-                  transition: {
-                    delay: index * 0.3,
-                    duration: 0.5,
-                    type: "spring",
-                  },
-                }
-              )
-            )}
+
+                  {/* Actions Row */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {user?.role === "teacher" && user._id === test.teacher && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(test);
+                        }}
+                        className="p-2.5 bg-rose-500/5 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg border border-rose-500/10 transition-all active:scale-90"
+                      >
+                        <FaTrash className="text-[10px]" />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        navigate(`/get/questions/${test._id}`);
+                        getTestQuestions(test._id);
+                      }}
+                      className="p-2.5 bg-primary-600/10 text-primary-400 hover:bg-primary-600 hover:text-white rounded-lg border border-primary-500/20 transition-all group/btn"
+                    >
+                      <FaPlay className="text-[10px] sm:text-[11px] group-hover/btn:scale-110 transition-transform" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Pagination */}
-      {tests.length > 5 && (
-        <div className="flex justify-center mt-6 md:mt-8 space-x-1 md:space-x-2">
-          {/* Oldingi sahifa tugmasi */}
+      {tests.length > testsPerPage && (
+        <div className="flex items-center justify-center mb-20 space-x-2 relative z-10">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
-            className={`px-3 md:px-4 py-1.5 md:py-2 rounded-lg ${
-              currentPage === 1
-                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+            className="w-12 h-12 flex items-center justify-center rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 text-slate-400 disabled:opacity-20 hover:text-white hover:bg-white/10 transition-all active:scale-90"
           >
             ❮
           </button>
-
-          {/* Birinchi sahifa */}
-          {currentPage > 3 && (
-            <>
-              <button
-                onClick={() => setCurrentPage(1)}
-                className={`px-3 md:px-4 py-1.5 md:py-2 rounded-lg ${
-                  currentPage === 1
-                    ? "bg-purple-500 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                1
-              </button>
-              {currentPage > 4 && (
-                <span className="px-2 md:px-4 py-1.5 md:py-2">...</span>
-              )}
-            </>
-          )}
-
-          {/* O'rta sahifalar */}
-          {pageNumbers
-            .filter((num) => {
-              if (currentPage <= 3) return num <= 5;
-              if (currentPage >= totalPages - 2) return num >= totalPages - 4;
-              return num >= currentPage - 2 && num <= currentPage + 2;
-            })
-            .map((number) => (
+          <div className="flex items-center gap-2 px-2">
+            {pageNumbers.map((number) => (
               <button
                 key={number}
                 onClick={() => setCurrentPage(number)}
-                className={`px-3 md:px-4 py-1.5 md:py-2 rounded-lg ${
-                  currentPage === number
-                    ? "bg-purple-500 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-50"
-                }`}
+                className={`w-12 h-12 rounded-2xl font-black transition-all duration-500 flex items-center justify-center ${currentPage === number
+                  ? "bg-primary-600 text-white shadow-[0_0_25px_rgba(59,130,246,0.3)] scale-110"
+                  : "backdrop-blur-xl bg-white/5 border border-white/10 text-slate-500 hover:text-white hover:bg-white/10"
+                  }`}
               >
                 {number}
               </button>
             ))}
-
-          {/* Oxirgi sahifa */}
-          {currentPage < totalPages - 2 && (
-            <>
-              {currentPage < totalPages - 3 && (
-                <span className="px-2 md:px-4 py-1.5 md:py-2">...</span>
-              )}
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                className={`px-3 md:px-4 py-1.5 md:py-2 rounded-lg ${
-                  currentPage === totalPages
-                    ? "bg-purple-500 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                {totalPages}
-              </button>
-            </>
-          )}
-
-          {/* Keyingi sahifa tugmasi */}
+          </div>
           <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-            }
+            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
             disabled={currentPage === totalPages}
-            className={`px-3 md:px-4 py-1.5 md:py-2 rounded-lg ${
-              currentPage === totalPages
-                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+            className="w-12 h-12 flex items-center justify-center rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 text-slate-400 disabled:opacity-20 hover:text-white hover:bg-white/10 transition-all active:scale-90"
           >
             ❯
           </button>
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            {/* Modal backdrop */}
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75" />
+      {/* Delete Confirmation Modal (Premium Refined) */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-[#020617]/90 backdrop-blur-md"
+              onClick={() => setShowDeleteModal(false)}
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative w-full max-w-md backdrop-blur-3xl bg-[#0f172a]/95 border border-white/10 rounded-[3rem] p-10 text-center shadow-[0_0_50px_rgba(0,0,0,0.5)] z-50 overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-600 to-rose-400 opacity-50" />
 
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen">
-              &#8203;
-            </span>
-
-            <div className="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform sm:my-8 sm:align-middle sm:max-w-lg sm:w-full relative z-50">
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <FaTrash className="h-6 w-6 text-red-600" />
-                  </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">
-                      Testni o'chirish
-                    </h3>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        Rostdan ham bu testni o'chirmoqchimisiz? Bu amalni ortga
-                        qaytarib bo'lmaydi.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+              <div className="w-20 h-20 mx-auto mb-8 bg-rose-500/10 border border-rose-500/20 rounded-[2rem] flex items-center justify-center group shadow-inner">
+                <FaTrash className="text-2xl text-rose-500 group-hover:scale-110 transition-transform" />
               </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+
+              <h3 className="text-3xl font-bold text-white mb-4 font-outfit tracking-tight">Testni o'chirish</h3>
+              <p className="text-slate-400 text-sm mb-10 leading-relaxed font-medium">
+                Rostdan ham bu testni butunlay o'chirib yubormoqchimisiz? Ushbu amalni qaytarib bo'lmaydi.
+              </p>
+
+              <div className="flex flex-col gap-4">
                 <button
-                  type="button"
                   onClick={confirmDelete}
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
+                  className="w-full py-4 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl shadow-xl shadow-rose-500/20 transition-all active:scale-95"
                 >
-                  O&apos;chirish
+                  O'chirishni tasdiqlash
                 </button>
                 <button
-                  type="button"
                   onClick={() => setShowDeleteModal(false)}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="w-full py-4 bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs uppercase tracking-widest rounded-2xl border border-white/10 transition-all active:scale-95"
                 >
                   Bekor qilish
                 </button>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </AnimatePresence>
+    </div >
   );
 };
 

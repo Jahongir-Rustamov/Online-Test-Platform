@@ -191,6 +191,7 @@ export async function GetChangedTeachers(req, res) {
 //GetAllStudents controller
 export async function GetAllStudents(req, res) {
   try {
+    const fanlar = await subjectModel.find({});
     const students = await UserModel.find({ role: "student" }).select(
       "-password"
     );
@@ -199,20 +200,25 @@ export async function GetAllStudents(req, res) {
         .status(404)
         .json({ message: "Hozircha hech qanday student yo'q 🙅‍♂️" });
     }
-    const infoStudents = students.map((student) => ({
+
+    const studentFilter = students.filter(student =>
+      !fanlar.some(fan => fan._id.toString() === student._id.toString())
+    );
+
+
+    const infoStudents = studentFilter.map((student) => ({
       _id: student._id,
       name: student.name,
       email: student.email,
       averageScore:
         student.TestWorkedOn.length > 0
           ? student.TestWorkedOn.reduce(
-              (acc, test) => acc + test.correctPercentage,
-              0
-            ) / student.TestWorkedOn.length
+            (acc, test) => acc + test.correctPercentage,
+            0
+          ) / student.TestWorkedOn.length
           : 0,
       countOfTests: student.TestWorkedOn.length,
     }));
-    console.log(infoStudents);
     res.status(200).json(infoStudents);
   } catch (error) {
     console.log("Error in GetAllParents Controller:", error.message);

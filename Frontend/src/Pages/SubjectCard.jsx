@@ -1,71 +1,40 @@
 import { useNavigate } from "react-router-dom";
 import { useTestsStore } from "../stores/useTestsStore";
+import { useUserStore } from "../stores/useUserStore";
+import { Crown } from "lucide-react";
 
 const SubjectCard = ({ subject }) => {
   const navigate = useNavigate();
   const { getMytests } = useTestsStore();
-  const colors = {
-    blue: "bg-blue-800",
-    purple: "bg-purple-800",
-    green: "bg-green-800",
-    pink: "bg-pink-800",
-    indigo: "bg-indigo-800",
-    teal: "bg-teal-800",
-    red: "bg-red-800",
-    yellow: "bg-yellow-800",
-    orange: "bg-orange-800",
-    cyan: "bg-cyan-800",
-    lime: "bg-lime-800",
-    amber: "bg-amber-800",
-    emerald: "bg-emerald-800",
-    rose: "bg-rose-800",
-    fuchsia: "bg-fuchsia-800",
-    violet: "bg-violet-800",
-    slate: "bg-slate-800",
-    stone: "bg-stone-800",
-    sky: "bg-sky-800",
-  };
+  const { user } = useUserStore();
 
-  const lightColors = {
-    blue: "bg-blue-100 text-blue-800",
-    purple: "bg-purple-100 text-purple-800",
-    green: "bg-green-100 text-green-800",
-    pink: "bg-pink-100 text-pink-800",
-    indigo: "bg-indigo-100 text-indigo-800",
-    teal: "bg-teal-100 text-teal-800",
-    red: "bg-red-100 text-red-800",
-    yellow: "bg-yellow-100 text-yellow-800",
-    orange: "bg-orange-100 text-orange-800",
-    cyan: "bg-cyan-100 text-cyan-800",
-    lime: "bg-lime-100 text-lime-800",
-    amber: "bg-amber-100 text-amber-800",
-    emerald: "bg-emerald-100 text-emerald-800",
-    rose: "bg-rose-100 text-rose-800",
-    fuchsia: "bg-fuchsia-100 text-fuchsia-800",
-    violet: "bg-violet-100 text-violet-800",
-    slate: "bg-slate-100 text-slate-800",
-    stone: "bg-stone-100 text-stone-800",
-    sky: "bg-sky-100 text-sky-800",
-  };
+  const isTeacher = user && user.name === subject.teacherName;
 
-  // Tasodifiy ranglar
-  const randomColorKey =
-    Object.keys(colors)[Math.floor(Math.random() * Object.keys(colors).length)];
   return (
     <div
-      onClick={() => (
-        navigate(`/subject/${subject._id}`, { state: { name: subject.name} }),
-        getMytests(subject._id)
-      )}
-      className={`${colors[randomColorKey]} h-[120px] md:h-[150px] rounded-lg cursor-pointer transition-all duration-300 hover:shadow-2xl text-white relative group flex items-center justify-center overflow-hidden`}
+      onClick={() => {
+        navigate(`/subject/${subject._id}`, { state: { name: subject.name } });
+        getMytests(subject._id);
+      }}
+      className="bg-[#1e293b]/50 backdrop-blur-xl border border-white/10 h-[150px] md:h-[180px] rounded-3xl cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:bg-[#1e293b]/80 hover:border-primary-500/50 hover:shadow-[0_10px_40px_-10px_rgba(16,185,129,0.3)] relative group flex flex-col items-center justify-center overflow-hidden"
     >
+      {/* Dynamic Background Pattern */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+
+      {/* Teacher Crown Icon */}
+      {isTeacher && (
+        <div className="absolute top-4 left-4 z-20 animate-pulse">
+          <Crown className="w-6 h-6 text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.6)]" />
+        </div>
+      )}
+
       {/* Teacher Badge */}
       <div
-        className={`absolute top-2 right-2 ${lightColors[randomColorKey]} px-3 py-1 rounded-full text-sm font-medium shadow-lg flex items-center gap-1`}
+        className="absolute top-4 right-4 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-300 shadow-sm flex items-center gap-1.5 group-hover:bg-primary-500/20 group-hover:text-primary-300 group-hover:border-primary-500/30 transition-all duration-300 backdrop-blur-md"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
+          className="h-3.5 w-3.5"
           viewBox="0 0 20 20"
           fill="currentColor"
         >
@@ -75,17 +44,16 @@ const SubjectCard = ({ subject }) => {
           subject.teacherName.slice(1).toLowerCase()}
       </div>
 
-      <div className="text-center">
-        <h3 className="text-xl md:text-3xl font-bold tracking-wider">
+      <div className="text-center z-10 w-full px-4 mt-4">
+        <h3 className="text-xl md:text-2xl font-bold text-white font-outfit truncate group-hover:text-primary-400 transition-colors duration-300">
           {subject.name}
         </h3>
-        <p className="text-sm md:text-lg opacity-90">
-          Testlar soni: {subject.testsCount}
-        </p>
+        <div className="mt-4 inline-flex items-center space-x-2 bg-white/5 border border-white/5 px-4 py-1.5 rounded-full group-hover:bg-primary-500/10 group-hover:border-primary-500/20 transition-all duration-300">
+          <span className="text-xs md:text-sm font-medium text-slate-400 group-hover:text-primary-200 transition-colors">
+            Umumiy testlar: <strong className="text-white group-hover:text-primary-400">{subject.testsCount}</strong> ta
+          </span>
+        </div>
       </div>
-
-      {/* Hover Effect Overlay */}
-      <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
     </div>
   );
 };

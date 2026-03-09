@@ -11,7 +11,7 @@ const router = express.Router();
 router.get("/get_infos_of_profile", ProtectRoute, GetProfile);
 
 router.get(
-  "parent/get_infos_of_profile",
+  "/parent/get_infos_of_profile",
   ProtectRoute,
   ParentsRoute,
   GetMyChildrenProfile

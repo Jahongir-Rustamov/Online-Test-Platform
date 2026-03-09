@@ -9,12 +9,13 @@ export const useTestsStore = create((set) => ({
   Questions: [],
   statistics: null,
   CheckingProccess: [],
+  sonWorkedOn: null,
   WorkedOn: null,
   TeachersAdmins: [],
   ChangeTeachers: [],
   setProducts: (subject) => set({ subject }),
   setMytests: (Mytests) => set({ Mytests }),
-
+  setSonWorkedOn: (sonWorkedOn) => set({ sonWorkedOn }),
   getSubjects: async () => {
     set({ loading: true });
     try {
@@ -156,6 +157,25 @@ export const useTestsStore = create((set) => ({
       toast.error(errorMessage, { id: "profile" });
     }
   },
+  //ParentProfile
+  getMySonProfile: async () => {
+    set({ loading: true });
+    try {
+      const res = await axios.get("/profile/parent/get_infos_of_profile");
+      console.log("Son Worked On:", res.data);
+      if (res?.data) {
+        set({ sonWorkedOn: res.data, loading: false });
+      } else {
+        set({ loading: false });
+        toast.error("Ma'lumotlar topilmadi ⚠️");
+      }
+    } catch (error) {
+      set({ loading: false });
+      const errorMessage =
+        error.response?.data?.message || "Xatolik yuz berdi ⚠️";
+      toast.error(errorMessage, { id: "profile" });
+    }
+  },
 
   // Only Admin can do it
   createRole: async ({ email, name, role }) => {
@@ -194,7 +214,7 @@ export const useTestsStore = create((set) => ({
   },
 
   getAllTeacherAndAdmin: async () => {
-    set({ loading: false });
+    set({ loading: true });
     try {
       const response = await axios.get(`/admin/getAllTeachers`);
       set({ TeachersAdmins: response?.data, loading: false });
@@ -207,7 +227,7 @@ export const useTestsStore = create((set) => ({
   },
 
   deleteSubjectAndTeacher: async (id) => {
-    set({ loading: false });
+    set({ loading: true });
     try {
       await axios.delete(`/admin/delete_teacher/${id}`);
       set((Prev) => ({
@@ -225,7 +245,7 @@ export const useTestsStore = create((set) => ({
   },
 
   deleteSubjectAndTeacher2: async (id) => {
-    set({ loading: false });
+    set({ loading: true });
     try {
       await axios.delete(`/admin/delete_teacher/${id}`);
       set((Prev) => ({
@@ -245,7 +265,7 @@ export const useTestsStore = create((set) => ({
   },
 
   updateInfosOfTeachers: async ({ id, name, email, newPassword }) => {
-    set({ loading: false });
+    set({ loading: true });
     try {
       if (newPassword.length > 0 && newPassword.length < 6)
         return toast.error(
@@ -267,7 +287,7 @@ export const useTestsStore = create((set) => ({
   },
 
   getChangeRoleInofos: async () => {
-    set({ loading: false });
+    set({ loading: true });
     try {
       const response = await axios.get(`/admin/changed_with_role_teachers`);
 

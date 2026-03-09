@@ -17,11 +17,13 @@ export async function GetMyChildrenProfile(req, res) {
   try {
     const parent = req.user;
     const infos = await UserModel.findById(parent._id);
-    const student =await UserModel.find({_id:infos.studentId}).populate("TestWorkedOn._id")
-    console.log(student);
+    const student = await UserModel.find({ _id: infos.studentId }).populate("TestWorkedOn._id")
+    console.log(
+      "Student Info", student
+    );
     if (!student) {
       return res.status(404).json({ message: "Student Infoa not found🎉" });
-    } 
+    }
     res.status(200).json(student);
   } catch (error) {
     console.log("Error in GetMyChildrenProfile controller:", error.message);
